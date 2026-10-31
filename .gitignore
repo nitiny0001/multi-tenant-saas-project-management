@@ -2,11 +2,14 @@
 __pycache__/
 *.py[cod]
 *.pyo
+**/__pycache__/
+
 
 # Virtual environments
 venv/
 env/
 myenv/
+**/myenv/
 
 # Environment variables
 .env
