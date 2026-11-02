@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
+
 class Task(BaseModel):
     id: int
-    title: str
+    title: str = Field(min_length=3, max_length=100)
     completed: bool = False
     description: Optional[str] = None
 
