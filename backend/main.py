@@ -2,11 +2,18 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
 
-class Task(BaseModel):
-    id: int
+class Taskcreate(BaseModel):
     title: str = Field(min_length=3, max_length=100)
     completed: bool = False
     description: Optional[str] = None
+    priority: int = Field(ge=1, le=5)
+
+class Taskresponse(Taskcreate):
+    id: int
+
+class Taskcreateresponse(BaseModel):
+    message: str
+    task: Taskresponse
 
 app = FastAPI(
     title="SaaS Project Management API",
@@ -27,16 +34,21 @@ def health_check():
     }
 
 tasks = []
-@app.get("/tasks")
+@app.get("/tasks", response_model = list[Taskresponse])
 def get_tasks():
     return tasks
 
-@app.post("/tasks")
-def create_task(task: Task):
-    tasks.append(task.model_dump())
+@app.post("/tasks", response_model = Taskcreateresponse)
+def create_task(task: Taskcreate):
+    new_id = len(tasks)+1
+    new_task = Taskresponse(
+        id = new_id,
+        **task.model_dump()
+    )
+    tasks.append(new_task.model_dump())
     return{
         "message" : "Task created successfully",
-        "task" : task
+        "task" : new_task
     }
 
 @app.put("/tasks/{task_id}")
